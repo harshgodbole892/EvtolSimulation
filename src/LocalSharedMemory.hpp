@@ -17,32 +17,41 @@ using namespace std;
 #ifndef LOCALSHAREDMEMORY_H
 #define LOCALSHAREDMEMORY_H
 
-//1. Structure of Constants
 class LocalSharedMemory
 {
 public:
     
     // Getters for private variables:
     double getSimulationDuration(){ return cSimulationDuration; }
-    double getSimulationIteration(){ return cSimulationIterationRate; }
+    double getSimulationTimeStep(){ return cSimulationTimeStep; }
+    int getIterationIndex(){return mIterationIndex; }
+    string getProjectHomeDir(){return cProjectHomeDir; }
+    string getGenDir(){return cGenDir;}
+    string getParametersDir(){return cParametersDir;}
     
     // Setters for private variables:
     void setSimulationDuration(double iInput){  cSimulationDuration = iInput; }
-    void setSimulationIterationRate(double iInput){  cSimulationIterationRate = iInput; }
-    
-    // Public variables (if exceptionally required):
-    
+    void setSimulationTimeStep(double iInput){  cSimulationTimeStep = iInput; }
+    void setIterationIndex(int iInput){  mIterationIndex = iInput; }
+
     
     // Constructor:
-    LocalSharedMemory();
+    LocalSharedMemory(string iProjectHomeDir);
     
     // Internal functions:
     void initializeSimulationParameters();
     void initializeModelParameters();
+    void initializeEnvironmentVariables(string iProjectHomeDir);
 
 private:
-    double cSimulationDuration;        // Simulation total duration (sec)
-    double cSimulationIterationRate;   // Simulation iteration rate (sec)
+    double cSimulationDuration{10.0};        // Simulation total duration (sec)
+    double cSimulationTimeStep{1.0};        // Simulation iteration rate (sec)
+    int mIterationIndex{0};
+    
+    // Env Vars:
+    string cProjectHomeDir{""};
+    string cGenDir{"/Generated/"};
+    string cParametersDir{"/Parameters/"};
 };
 
 #endif

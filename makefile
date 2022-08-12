@@ -15,10 +15,10 @@ SOURCES := $(shell find $(SRCDIR) -type f -name *.$(SRCEXT))
 
 # Object file Generation
 OBJECTS := $(patsubst $(SRCDIR)/%,$(BUILDDIR)/%,$(SOURCES:.$(SRCEXT)=.o))
-CFLAGS := -g # -Wall
+CFLAGS := -g -std=c++14 # -Wall
 
 # External Libs
-LIB := -larmadillo -framework Accelerate
+LIB := -O2 -larmadillo
 INC := -I include
 
 $(TARGET): $(OBJECTS)
@@ -43,3 +43,4 @@ ticket:
 	$(CC) $(CFLAGS) spikes/ticket.cpp $(INC) $(LIB) -o bin/ticket
 
 .PHONY: clean
+

@@ -10,11 +10,24 @@ Description   : Used to share variabels across objects in the simulation.
 
 #include "LocalSharedMemory.hpp"
 
-//1. Structure of Constants
-LocalSharedMemory::LocalSharedMemory()
+LocalSharedMemory::LocalSharedMemory(string iProjectHomeDir)
 {
+    // Assign Environment Parameters:
+    initializeEnvironmentVariables(iProjectHomeDir);
+    
+    // Assign
     initializeSimulationParameters();
     initializeModelParameters();
+}
+
+/*
+ Initialize Environment variables
+*/
+void LocalSharedMemory::initializeEnvironmentVariables(string iProjectHomeDir)
+{
+    cProjectHomeDir = iProjectHomeDir;
+    cGenDir = iProjectHomeDir + "/Generated/";
+    cParametersDir = iProjectHomeDir + "/Parameters/";
 }
 
 /*
@@ -22,8 +35,8 @@ LocalSharedMemory::LocalSharedMemory()
 */
 void LocalSharedMemory::initializeSimulationParameters()
 {
-    double cSimulationDuration      = 10.0;
-    double cSimulationIterationRate = 0.1;
+    setSimulationDuration(10.0);
+    setSimulationTimeStep(1);
 }
 
 /*
