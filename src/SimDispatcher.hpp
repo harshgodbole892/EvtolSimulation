@@ -28,10 +28,6 @@ class SimDispatcher
 {
 public:
     
-    // Getters for private variables:
-    
-    // Setters for private variables:
-    
     // Constructor:
     SimDispatcher(LocalSharedMemory &iLSMmake);
     
@@ -43,12 +39,15 @@ public:
     void dispatchSimComponents(LocalSharedMemory &iLSM);
     
 private:
+    
+    // Member variables:
     double cSimTimeStep{0.1};   // Simulation iteration rate (sec)
     double cSimStartTime{0.0};
     double cSimEndTime{0.1};
     long long int mCollectSize{0};
-    //arma::vec mSimulationTime;
-    arma::vec mSimulationTime = arma::zeros<arma::vec>(1000);
+    
+    // Member objects:
+    arma::vec mSimulationTime = arma::zeros<arma::vec>(1);
     vector<SimComponent*> mSimComponents;
 };
 

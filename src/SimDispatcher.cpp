@@ -16,6 +16,7 @@ Description   : Generic simulation component class which provides a template for
 #include "SimDispatcher.hpp"
 
 /*
+ Constructor
 */
 SimDispatcher::SimDispatcher(LocalSharedMemory &iLSM)
 {
@@ -26,6 +27,7 @@ SimDispatcher::SimDispatcher(LocalSharedMemory &iLSM)
 }
 
 /*
+ Initialize the collect size for the simulation.
 */
 void SimDispatcher::initializeSimulation()
 {
@@ -36,14 +38,17 @@ void SimDispatcher::initializeSimulation()
 }
 
 /*
+ The addComponent function is used to correctly initialize a component and save its reference
+ in mSimComponents.
 */
 void SimDispatcher::addComponent(SimComponent &iSimComponent)
 {
+    iSimComponent.setCollectSize(mCollectSize);
     mSimComponents.push_back(&iSimComponent);
-    cout<<"Component size :"<<mSimComponents.size()<<endl;
 }
 
 /*
+ The dispatchSimComponents dispatches one iteration of the simulation.
 */
 void SimDispatcher::dispatchSimComponents(LocalSharedMemory &iLSM)
 {
@@ -53,7 +58,6 @@ void SimDispatcher::dispatchSimComponents(LocalSharedMemory &iLSM)
     
     for(int i = 0; i < mSimComponents.size(); i++)
     {
-        cout << "executing "<< i<< "/" <<mSimComponents.size() << endl;
         // Check if any component is Null by accident
         if (mSimComponents[i] == NULL)
         {
@@ -68,14 +72,34 @@ void SimDispatcher::dispatchSimComponents(LocalSharedMemory &iLSM)
 }
 
 /*
+ The SaveCollects function is used to save simulation data to disk.
+ This is executed at the end of the simulation.
 */
 void SimDispatcher::saveCollects(LocalSharedMemory &iLSM)
 {
     mSimulationTime.save(iLSM.getGenDir() + "mSimulationTime.txt", arma::raw_ascii);
+    // For each component added to list, save the simulation data
+    
+    for(int i = 0; i < mSimComponents.size(); i++)
+    {
+        // Check if any component is Null by accident
+        if (mSimComponents[i] == NULL)
+        {
+            cout<< "SimComponent at index "<< i <<" is NULL"<<endl;
+            continue;
+        }
+        else
+        {
+            mSimComponents[i]->saveCollect(iLSM);
+        }
+    }
 }
 
 
 /*
+ The Sim Dispatcher function dipatches all the iterations of the simulation
+ and saves the data at the end of the simulation using the saveCollects
+ function.
 */
 void SimDispatcher::startSimulation(LocalSharedMemory &iLSM)
 {
@@ -95,13 +119,18 @@ void SimDispatcher::startSimulation(LocalSharedMemory &iLSM)
             mSimulationTime(0) = cSimStartTime;
         }
         
-        //cout<<"\r"<< " Sim Time is :"<< mSimulationTime(i)<<"/"<< cSimEndTime;
+        // cout<<"\r"<< " Sim Time is :"<< mSimulationTime(i)<<"/"<< cSimEndTime;
+        cout<< " Sim Time is :"<< mSimulationTime(i)<<"/"<< cSimEndTime<<endl;
         // Dispatch component list
         dispatchSimComponents(iLSM);
         
-        // Save Collects to disk:
-        saveCollects(iLSM);
     }
+    cout<<endl;
+    
+    // Save Collects to disk:
+    saveCollects(iLSM);
+    
+    
 }
 
 
