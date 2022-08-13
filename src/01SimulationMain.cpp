@@ -21,6 +21,7 @@
 #include "SimComponent.hpp"
 #include "Vehicle.hpp"
 #include "SimDispatcher.hpp"
+#include "CommonDefines.hpp"
 
 using namespace std;
 using namespace arma;
@@ -57,22 +58,30 @@ int main(int argc, char** argv) {
     cout<<"Loading Shared Memory"<<endl;
     LocalSharedMemory wSharedMemory(wProjectHomeDir);
     
-    cout<<"Creating Components"<<endl;
-    SimComponent wSimComponent("TestSimComponent");
-    Vehicle wV1("TestVehicle1");
-    Vehicle wV2("TestVehicle2");
-    
+    // Create the dispatcher
     cout<<"Creating Dispatcher"<<endl;
     SimDispatcher wDispatcher(wSharedMemory);
     
-    cout<<"Adding Components to dispatcher"<<endl;
-    wDispatcher.addComponent(wSimComponent);
-    wDispatcher.addComponent(wV1);
-    wDispatcher.addComponent(wV2);
+    // Spawn the vehicles
+    cout<<"Creating Vehicles"<<endl;
+    vector<Vehicle> wVehicleVector;
     
+    wVehicleVector.push_back(Vehicle("Alpha", wSharedMemory));
+    wVehicleVector.push_back(Vehicle("Beta", wSharedMemory));
+    wVehicleVector.push_back(Vehicle("Charlie", wSharedMemory));
+    wVehicleVector.push_back(Vehicle("Delta", wSharedMemory));
+    wVehicleVector.push_back(Vehicle("Echo", wSharedMemory));
+    
+    // Spawn the Charging queue
+    
+    // Add references of generated sim components to the dispatcher
+    cout<<"Adding Components to dispatcher"<<endl;
+    for(int i=0; i< wVehicleVector.size(); i++)
+        wDispatcher.addComponent(wVehicleVector[i]);
+    
+    // Start the simulation:
     cout<<"Starting Simulation"<<endl;
     wDispatcher.startSimulation(wSharedMemory);
-    
     
 	return 0;
 }

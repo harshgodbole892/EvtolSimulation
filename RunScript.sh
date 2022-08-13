@@ -3,10 +3,10 @@
 # Runfile for project:
 #
 # 1: Ensure that generated directory exists, if not, then make one:
-if [ -d "Generated" ]; then
-rm -rf Generated/*.txt
+if [ -d "generated" ]; then
+rm -rf generated/*.txt
 else
-mkdir Generated
+mkdir generated
 fi
 export PROJECT_HOME_DIR=$(pwd)
 # Run generated Files!
