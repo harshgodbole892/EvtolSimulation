@@ -28,22 +28,22 @@ public:
     
     // Getters for private variables:
     string getComponentName(){ return cName; }
+    long long int getCollectSize(){return mCollectSize;}
     
     // Setters for private variables:
     void setComponentName(string iInput){  cName = iInput; }
+    void setCollectSize(long long int iInput){ mCollectSize = iInput; }
     
     // Constructor:
     SimComponent(string iName);
     
     // Internal functions:
     virtual void update(LocalSharedMemory &iLSM);
-    virtual void collect(LocalSharedMemory &iLSM);
     virtual void saveCollect(LocalSharedMemory &iLSM);
 
 private:
     string cName{""};
-    double cTimeStep{1.0};   // Simulation iteration rate (sec)
-    long long int mCollectSize{0};
+    long long int mCollectSize{0};  // Collect size, assigned by Dispatcher
 };
 
 #endif

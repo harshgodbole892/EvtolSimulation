@@ -6,8 +6,9 @@ Class Name    : SimComponent
 Class Type    : Simluation Support
  
 Description   : Generic simulation component class which provides a template for any
-                simulation objects. All simulation objects need to derive from this class
-                when used in a simulation.
+                simulation object. All simulation objects need to derive from this class
+                when used in a simulation, so that the dispactcher is able to dispatch
+                these components generically.
 */
 
 // Imports
@@ -15,29 +16,23 @@ Description   : Generic simulation component class which provides a template for
 #include "LocalSharedMemory.hpp"
 
 /*
+ Constructor
 */
 SimComponent::SimComponent(string iName)
 {
     cName = iName;
-    cTimeStep = 0.1;
 }
 
 /*
 */
 void SimComponent::update(LocalSharedMemory &iLSM)
 {
-    cout<<"This is SimComponent Class, Timestep : "<<cTimeStep<<endl;
+    //cout<<"This is SimComponent Class, Timestep : "<<cTimeStep<<endl;
     //cout<<"From local shared memory - Simulation duration is "<<iLSM.getSimulationDuration()<<endl;
 }
 
 /*
-*/
-void SimComponent::collect(LocalSharedMemory &iLSM)
-{
-    return;
-}
-
-/*
+  Collect function, used to save any simulation variables
 */
 void SimComponent::saveCollect(LocalSharedMemory &iLSM)
 {
