@@ -5,7 +5,7 @@ Model         : N/A
 Class Name    : Local Shared Memory
 Class Type    : Simluation Support
  
-Description   : Used to share variabels across objects in the simulation.
+Description   : Used to share variables across objects in the simulation.
 */
 
 #include <iostream>
@@ -45,13 +45,14 @@ public:
 
 private:
     double cSimulationDuration{10.0};        // Simulation total duration (sec)
-    double cSimulationTimeStep{1.0};        // Simulation iteration rate (sec)
-    int mIterationIndex{0};
+    double cSimulationTimeStep{1.0};         // Simulation iteration rate (sec)
+    int mIterationIndex{0};                  // Simulation Iteration index
+    long long int mCollectSize{0};           // Collect size for all collected variabels
     
     // Env Vars:
     string cProjectHomeDir{""};
-    string cGenDir{"/Generated/"};
-    string cParametersDir{"/Parameters/"};
+    string cGenDir{"/generated/"};
+    string cParametersDir{"/parameters/"};
 };
 
 #endif
