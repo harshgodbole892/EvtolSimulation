@@ -18,10 +18,11 @@
 
 // Project Specific includes:
 #include "LocalSharedMemory.hpp"
-#include "SimComponent.hpp"
-#include "Vehicle.hpp"
 #include "SimDispatcher.hpp"
 #include "CommonDefines.hpp"
+#include "SimComponent.hpp"
+#include "Vehicle.hpp"
+#include "ChargingQueue.hpp"
 
 using namespace std;
 using namespace arma;
@@ -72,12 +73,17 @@ int main(int argc, char** argv) {
     wVehicleVector.push_back(Vehicle("Delta", wSharedMemory));
     wVehicleVector.push_back(Vehicle("Echo", wSharedMemory));
     
+    cout<<"Creating Charging Queue"<<endl;
+    ChargingQueue wChargingQueue(wVehicleVector, "ChargingQueue", wSharedMemory);
+    
+    cout<<wVehicleVector.size()<<endl;
     // Spawn the Charging queue
     
     // Add references of generated sim components to the dispatcher
     cout<<"Adding Components to dispatcher"<<endl;
     for(int i=0; i< wVehicleVector.size(); i++)
         wDispatcher.addComponent(wVehicleVector[i]);
+    wDispatcher.addComponent(wChargingQueue);
     
     // Start the simulation:
     cout<<"Starting Simulation"<<endl;

@@ -56,6 +56,11 @@ void Vehicle::initializeVehicle()
         sBatteryCharge(0) = cBatteryCapacity(0);
         sVehicleState(0)  = VehicleState::CRUISE;
     }
+    else if(oVehicleInitMode == VehicleInitMode::DISCHARGED_EMPTYBATT)
+    {
+        sBatteryCharge(0) = 0.0;
+        sVehicleState(0)  = VehicleState::DISCHARGED;
+    }
     else if(oVehicleInitMode == VehicleInitMode::QUEUE_EMPTYBATT)
     {
         sBatteryCharge(0) = 0.0;
@@ -137,7 +142,7 @@ void Vehicle::computeCruiseState(LocalSharedMemory &iLSM)
     
     if (sBatteryCharge(ITR) < 0.0)
     {
-        sVehicleState(ITR) = VehicleState::QUEUE;
+        sVehicleState(ITR) = VehicleState::DISCHARGED;
         return;
     }
     
