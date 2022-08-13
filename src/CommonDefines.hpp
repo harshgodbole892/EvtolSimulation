@@ -26,15 +26,17 @@ Description   : Common header with constants and expressions for
 enum VehicleState
 {
     CRUISE   = 0,
-    QUEUE    = 1,
-    CHARGING = 2,
+    DISCHARGED = 1,
+    QUEUE    = 2,
+    CHARGING = 3,
 };
 
 enum VehicleInitMode
 {
-    CRUISE_FULLBAT     = 0,
-    QUEUE_EMPTYBATT    = 1,
-    CHARGING_EMPTYBATT = 2,
+    CRUISE_FULLBAT       = 0,
+    DISCHARGED_EMPTYBATT = 1,
+    QUEUE_EMPTYBATT      = 2,
+    CHARGING_EMPTYBATT   = 3,
 };
 
 

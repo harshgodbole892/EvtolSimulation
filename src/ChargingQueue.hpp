@@ -14,6 +14,7 @@ Description   : Generic Charging queue class, simulates a queue of vehicles
 #include <fstream>
 #include <stdio.h>
 #include <armadillo>
+#include <queue>
 
 using namespace std;
 #ifndef CHARGINGQUEUE_H
@@ -23,9 +24,8 @@ using namespace std;
 
 #define CHARGINGQUEUE_DEBUG 0
 
-
-
 class LocalSharedMemory;
+class Vehicle;
 
 // ------ //
 class ChargingQueue : public SimComponent
@@ -38,7 +38,7 @@ public:
 
     
     // Constructor:
-    ChargingQueue(string iName, LocalSharedMemory &iLSM);
+    ChargingQueue(vector<Vehicle> &iVehicleVector, string iName, LocalSharedMemory &iLSM);
     
     // Member functions:
     void update(LocalSharedMemory &iLSM);
@@ -46,6 +46,12 @@ public:
     
 private:
     
+    // Constants:
+    int cMaxChargingStations{3};
+    
+    // Member variables:
+    vector<Vehicle*> mVehicleVectorPtr;
+    queue<Vehicle*> mChargingQueuePtr;
     
     // State Variables:
     
