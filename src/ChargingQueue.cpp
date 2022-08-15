@@ -20,11 +20,14 @@ Description   : Generic Charging queue class, simulates a queue of vehicles
 /*
  Constructor
 */
-ChargingQueue::ChargingQueue(vector<Vehicle> &iVehicleVector, string iName, LocalSharedMemory &iLSM): SimComponent(iName)
+ChargingQueue::ChargingQueue(vector<Vehicle> &iVehicleVector, int iComponentId, string iName, LocalSharedMemory &iLSM): SimComponent(iComponentId, iName)
 {
+    // Set Max charging stations:
+    
+    cMaxChargingStations = iLSM.getMaxChargingStations();
+    
     for(int i = 0; i<iVehicleVector.size(); i++)
     {
-        cout<<"iteration "<< i<<endl;
         mVehicleVectorPtr.push_back(&iVehicleVector[i]);
     }
 }
@@ -35,7 +38,6 @@ ChargingQueue::ChargingQueue(vector<Vehicle> &iVehicleVector, string iName, Loca
 void ChargingQueue::update(LocalSharedMemory &iLSM)
 {
     // Remain initialized for 1 iteration to initialize states.
-    if(ITR == 0) return;
     
     int wVehiclesInCharging = 0;
     

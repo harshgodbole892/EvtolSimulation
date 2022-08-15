@@ -32,13 +32,13 @@ class ChargingQueue : public SimComponent
 {
 public:
     // setters:
-
+    void setMaxChargingStations(int iInput){cMaxChargingStations = iInput;}
     
     // getters:
-
+    int getMaxChargingStations() {return cMaxChargingStations;}
     
     // Constructor:
-    ChargingQueue(vector<Vehicle> &iVehicleVector, string iName, LocalSharedMemory &iLSM);
+    ChargingQueue(vector<Vehicle> &iVehicleVector, int iComponentId, string iName, LocalSharedMemory &iLSM);
     
     // Member functions:
     void update(LocalSharedMemory &iLSM);
@@ -47,7 +47,7 @@ public:
 private:
     
     // Constants:
-    int cMaxChargingStations{3};
+    int cMaxChargingStations{1};
     
     // Member variables:
     vector<Vehicle*> mVehicleVectorPtr;
