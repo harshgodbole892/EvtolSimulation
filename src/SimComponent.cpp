@@ -18,9 +18,10 @@ Description   : Generic simulation component class which provides a template for
 /*
  Constructor
 */
-SimComponent::SimComponent(string iName)
+SimComponent::SimComponent(int iComponentId, string iComponentName)
 {
-    cName = iName;
+    cComponentName = iComponentName;
+    cComponentId   = iComponentId;
 }
 
 /*
