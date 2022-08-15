@@ -9,51 +9,105 @@ import numpy as np
 import pandas as pd
 import os
 import plotly.graph_objects as go
+import plotly.express as px
 
 
-data = pd.DataFrame()
+def makeGlobalResults(filenames):
+    
+    data = pd.DataFrame()
+    
+    for filename in filenames:
+        if '.txt' in filename and 'Observer' not in filename:
+            data[filename[:-4]] = pd.read_csv("Generated/" + filename, header=None)
+
+
+    # Convert Simulation time to hrs: 
+    
+    data['mSimulationTime'] = data['mSimulationTime'] / 3600.0;
+
+    # Create figure and add one scatter trace
+    fig = go.Figure()
+
+    fig.add_trace(go.Scatter(
+        x=data['mSimulationTime'], 
+        y=data['mSimulationTime'],
+        visible=True,
+        mode='markers',
+        )
+              )
+
+    # Create x and y buttons
+    x_buttons = []
+    y_buttons = []
+
+    for column in data.columns:
+        x_buttons.append(dict(method='restyle',
+                              label=column,
+                              args=[{'x': [data[column]]}]
+                              )
+                         )
+    
+        y_buttons.append(dict(method='restyle',
+                              label=column,
+                              args=[{'y': [data[column]]}]
+                              )
+                         )
+
+    # Pass buttons to the updatemenus argument
+    fig.update_layout(updatemenus=[dict(buttons=x_buttons, showactive = True, direction='up', x=0.5, y=-0.1),
+                                   dict(buttons=y_buttons, showactive = True, direction='down', x=-0.01, y=0.5)])
+
+    fig.write_html('results.html', auto_open=True)
+
+    return data, fig
+
+"""
+Make the observer dataframe from generated data
+"""
+def makeObserverData(filename):
+    
+    
+    data = pd.DataFrame()
+    
+    col_names = ['ALPHA', 'BETA', 'CHARLIE', 'DELTA', 'ECHO']
+    
+    data = pd.read_csv("Generated/" + filename, sep=',', header=None, names=col_names )
+            
+    data['mSimulationTime'] = pd.read_csv("Generated/mSimulationTime.txt", header=None)
+            
+    # Convert Simulation time to hrs: 
+    
+    data['mSimulationTime'] = data['mSimulationTime'] / 3600.0;
+    
+    data.apply(pd.to_numeric)
+    
+    fig = px.line(data, x='mSimulationTime', y=col_names, title=filename)
+                  #animation_frame="mSimulationTime", range_x=[0,3], range_y=[0,100])
+    
+    fig.write_html(filename + '.html', auto_open=True) 
+    
+    return data, fig
+
+"""
+Main Script
+"""
+
 filenames = os.listdir('Generated/')
 filenames.sort()
 
-for filename in filenames:
-    if '.txt' in filename:
-        data[filename[:-4]] = pd.read_csv("Generated/" + filename, header=None)
+makeGlobalResults(filenames)
+
+data,fig = makeObserverData('22_Observer_sAvgTimeInCharging.txt')
+data,fig = makeObserverData('22_Observer_sAvgTimeInFlight.txt')
+data,fig = makeObserverData('22_Observer_sAvgTimeInQueue.txt')
+data,fig = makeObserverData('22_Observer_sTotalPassengerMiles.txt')
+data,fig = makeObserverData('22_Observer_sMaxNumOfFaults.txt')
 
 
-# Convert Simulation time to hrs: 
-    
-data['mSimulationTime'] = data['mSimulationTime'] / 3600.0;
 
-# Create figure and add one scatter trace
-fig = go.Figure()
 
-fig.add_trace(go.Scatter(
-    x=data['mSimulationTime'], 
-    y=data['mSimulationTime'],
-    visible=True,
-    mode='markers',
-    )
-              )
 
-# Create x and y buttons
-x_buttons = []
-y_buttons = []
 
-for column in data.columns:
-    x_buttons.append(dict(method='restyle',
-                        label=column,
-                        args=[{'x': [data[column]]}]
-                        )
-                )
-    
-    y_buttons.append(dict(method='restyle',
-                        label=column,
-                        args=[{'y': [data[column]]}]
-                        )
-                )
 
-# Pass buttons to the updatemenus argument
-fig.update_layout(updatemenus=[dict(buttons=x_buttons, showactive = True, direction='up', x=0.5, y=-0.1),
-                               dict(buttons=y_buttons, showactive = True, direction='down', x=-0.01, y=0.5)])
 
-fig.write_html('results.html', auto_open=True)
+
