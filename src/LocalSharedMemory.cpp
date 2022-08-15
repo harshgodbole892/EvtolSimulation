@@ -8,6 +8,7 @@ Class Type    : Simluation Support
 Description   : Used to share variables across objects in the simulation.
 */
 
+#include <stdlib.h>
 #include "LocalSharedMemory.hpp"
 #include "CommonDefines.hpp"
 
@@ -38,9 +39,9 @@ void LocalSharedMemory::initializeEnvironmentVariables(string iProjectHomeDir)
 void LocalSharedMemory::initializeSimulationParameters()
 {
     // Total simulation duration (sec)
-    setSimulationDuration(3 * HR2SEC);
+    cSimulationDuration = 3 * HR2SEC;
     // Simulation time step (sec)
-    setSimulationTimeStep(1);
+    cSimulationTimeStep = 60;  // 1 min time step
 }
 
 /*
@@ -48,6 +49,18 @@ Initialize model specific shared parameters if any
 */
 void LocalSharedMemory::initializeModelParameters()
 {
-  // Pass
-    return;
+    // Ensure that mapping is 1 to 1!!
+    mVehicleTypeMap.insert(pair<int, string>(1, "Alpha"));
+    mVehicleTypeMap.insert(pair<int, string>(2, "Beta"));
+    mVehicleTypeMap.insert(pair<int, string>(3, "Charlie"));
+    mVehicleTypeMap.insert(pair<int, string>(4, "Delta"));
+    mVehicleTypeMap.insert(pair<int, string>(5, "Echo"));
+    
+    // Reverse map fails if mapping is not 1 to 1
+    for (const auto& key : mVehicleTypeMap) {
+        mVehicleTypeRevMap.insert(pair<string, int>(key.second, key.first));
+    }
+    
+    cNumOfVehicles = 20;
+    cMaxChargingStations = 3;
 }
