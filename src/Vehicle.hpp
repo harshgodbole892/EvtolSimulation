@@ -36,7 +36,7 @@ public:
     void setEnergyUseAtCruise(double iInput){ cEnergyUseAtCruise(0) = iInput;}
     void setPassengerCount(int    iInput)   { cPassengerCount(0)    = static_cast<double>(iInput);}
     void setFaultProbPerHr(double iInput)   { cFaultProbPerHr(0)    = iInput;}
-    void setVehicleState(int iState, LocalSharedMemory &LSM);
+    void setVehicleState(int iState, LocalSharedMemory &iLSM);
     
     // getters:
     double getCruiseSpeed()      { return cCruiseSpeed(0)      ;}
@@ -45,10 +45,18 @@ public:
     double getEnergyUseAtCruise(){ return cEnergyUseAtCruise(0);}
     double getPassengerCount()   { return cPassengerCount(0)   ;}
     double getFaultProbPerHr()   { return cFaultProbPerHr(0)   ;}
+    
+    double getTimeInFlightTotal(LocalSharedMemory &iLSM);
+    double getTimeInQueueTotal(LocalSharedMemory &iLSM);
+    double getTimeChargingTotal(LocalSharedMemory &iLSM);
+    double getTimePassengerHrs(LocalSharedMemory &iLSM);
+    double getDistanceTravelled(LocalSharedMemory &iLSM);
+    double getMaxNumOfFaults(LocalSharedMemory &iLSM);
+
     int    getVehicleState(LocalSharedMemory &LSM);
     
     // Constructor:
-    Vehicle(string iName, LocalSharedMemory &LSM);
+    Vehicle(int iComponentId, string iName, LocalSharedMemory &LSM);
     
     // Member functions:
     void initializeStateSize();
@@ -58,6 +66,7 @@ public:
     void computeCruiseState(LocalSharedMemory &LSM);
     void computeQueueState(LocalSharedMemory &LSM);
     void computeChargingState(LocalSharedMemory &LSM);
+    void computeMaxFaultsPerHr(LocalSharedMemory &iLSM);
     void saveCollect(LocalSharedMemory &LSM);
     
 private:
@@ -100,14 +109,11 @@ private:
     arma::vec sTimeChargingTotal;  // (sec)
     arma::vec sTimePassengerHrs;   // (sec)
     arma::vec sDistanceTravelled;  // (sec)
-    arma::vec sMaxNumOfFaults;     // (sec)
+    arma::vec sMaxNumOfFaults;     // (number)
     
     // Build Options:
-    int oVehicleInitMode{VehicleInitMode::CHARGING_EMPTYBATT};
+    int oVehicleInitMode{VehicleInitMode::CRUISE_FULLBAT};
                                    // Enum Vehicle Init Mode,
-                                   // 0 - fully Charged
-                                   // 1 - discharged in queue
-                                   // 2 - discharged in charging state
     
 };
 

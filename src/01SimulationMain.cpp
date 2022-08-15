@@ -13,8 +13,11 @@
 #include <armadillo>
 #include <vector>
 #include <fstream>
+#include <map>
 #include <stdio.h>
 #include <stdlib.h>
+#include <chrono>
+
 
 // Project Specific includes:
 #include "LocalSharedMemory.hpp"
@@ -23,12 +26,71 @@
 #include "SimComponent.hpp"
 #include "Vehicle.hpp"
 #include "ChargingQueue.hpp"
+#include "Observer.hpp"
+
 
 using namespace std;
 using namespace arma;
 
 
-//17. Main Function
+// Randomly generate vector of 20 vehicles, one of each type
+vector<Vehicle> createVehicleVector(LocalSharedMemory &iLSM)
+{
+    // Return vector
+    vector<Vehicle>  wVehicleVector;
+    
+    // Working Variables:
+    map<int, string> wVehicleTypeMap = iLSM.getVehicleTypeMap();
+    
+    string wRandVehicleType = "";
+    
+    int wNumOfVehicles = iLSM.getNumOfVehicles();
+    int wRandInt = 0;
+    int wNumOfTypes    = wVehicleTypeMap.size();
+    
+    long long t1 = 0;
+    
+    // Check if number of types are greater than number of vehicles,
+    // If Yes, notify user that NumOfTypes is used as vehicles.
+    
+    if (wNumOfTypes > wNumOfVehicles )
+    {
+        cout<<"Creating "<<wNumOfTypes<<" Vehicles as it is greater than requested number of vehicles "<<wNumOfVehicles<<endl;
+    }
+    
+    // Make 1 vehicle of each type
+    for(int i = 1; i < (wNumOfTypes +1); i++)
+    {
+        wVehicleVector.push_back(Vehicle(i, wVehicleTypeMap.find(i)->second, iLSM));
+        cout<<"Making vehicle "<<i<<", Type "<<wVehicleTypeMap.find(i)->second<<endl;
+    }
+    
+    // Make rest of the vehicles randomly
+    for(int i=(wNumOfTypes + 1); i < (wNumOfVehicles + 1) ; i++)
+    {
+        // Random Seed for initialization;
+        // If unique seed option is used, new seed is not generated at runtime.
+        // this is useful for debugging purposes
+        if(iLSM.getOptUniqueSeedForRand() != 1)
+        {
+            // Use High resolution clock to ensure that the seed is changed
+            // at every iteration of the for loop.
+            t1 = chrono::high_resolution_clock::now().time_since_epoch().count();
+            srand(static_cast<unsigned int>(t1));
+        }
+        
+        // Random int between 1 and NumOfTypes
+        wRandInt = rand() % wNumOfTypes + 1;
+        wRandVehicleType = wVehicleTypeMap.find(wRandInt)->second;
+        
+        cout<<"Making vehicle "<<i<<", Type "<<wRandVehicleType<<endl;
+        wVehicleVector.push_back(Vehicle(i, wRandVehicleType, iLSM));
+    }
+    
+    return wVehicleVector;
+}
+
+// Main Function
 int main(int argc, char** argv) {
     
     /*
@@ -52,8 +114,12 @@ int main(int argc, char** argv) {
     }
     
     wProjectHomeDir.assign(wProjectHomeDirPtr);
-        
-    cout<<"The Evtols are now in the Metaverse!!"<<endl;
+    
+    cout<<" **** **** ******* **** **** ******  ** *"<<endl;
+    cout<<" ********  *****     **** *   ****   *** ****"<<endl;
+    cout<<" The Evtols are now in the cloud(s)!!"<<endl;
+    cout<<" **** **** ******* **** **** ******  ** *"<<endl;
+    cout<<" ********  *****     **** *   ****   *** ****"<<endl<<endl;
     
     // Load shared memory
     cout<<"Loading Shared Memory"<<endl;
@@ -65,18 +131,27 @@ int main(int argc, char** argv) {
     
     // Spawn the vehicles
     cout<<"Creating Vehicles"<<endl;
-    vector<Vehicle> wVehicleVector;
     
-    wVehicleVector.push_back(Vehicle("Alpha", wSharedMemory));
-    wVehicleVector.push_back(Vehicle("Beta", wSharedMemory));
-    wVehicleVector.push_back(Vehicle("Charlie", wSharedMemory));
-    wVehicleVector.push_back(Vehicle("Delta", wSharedMemory));
-    wVehicleVector.push_back(Vehicle("Echo", wSharedMemory));
+    vector<Vehicle> wVehicleVector = createVehicleVector(wSharedMemory);
     
-    cout<<"Creating Charging Queue"<<endl;
-    ChargingQueue wChargingQueue(wVehicleVector, "ChargingQueue", wSharedMemory);
+    int wChargingQueueId = (wSharedMemory.getNumOfVehicles() + 1);
     
-    cout<<wVehicleVector.size()<<endl;
+    cout<<"Creating Charging Queue with ID "<<wChargingQueueId <<endl;
+    ChargingQueue wChargingQueue(wVehicleVector,
+                                 wChargingQueueId,
+                                 "ChargingQueue",
+                                 wSharedMemory);
+    
+    cout<<"Max Charging Stations set to "<<wChargingQueue.getMaxChargingStations()<<endl;
+    
+    int wObserverId = (wSharedMemory.getNumOfVehicles() + 2);
+    
+    cout<<"Creating the observer station with ID "<< wObserverId <<endl;
+    Observer wObserver(wVehicleVector,
+                       wObserverId,
+                       "Observer",
+                       wSharedMemory);
+    
     // Spawn the Charging queue
     
     // Add references of generated sim components to the dispatcher
@@ -84,6 +159,7 @@ int main(int argc, char** argv) {
     for(int i=0; i< wVehicleVector.size(); i++)
         wDispatcher.addComponent(wVehicleVector[i]);
     wDispatcher.addComponent(wChargingQueue);
+    wDispatcher.addComponent(wObserver);
     
     // Start the simulation:
     cout<<"Starting Simulation"<<endl;

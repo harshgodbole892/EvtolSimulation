@@ -20,7 +20,7 @@ Description   : Generic Vehicle class that defines a general evtol
 /*
  Constructor
 */
-Vehicle::Vehicle(string iName, LocalSharedMemory &iLSM): SimComponent(iName)
+Vehicle::Vehicle(int iComponentId, string iName, LocalSharedMemory &iLSM): SimComponent(iComponentId, iName)
 {
     loadParameters(iName,iLSM);
 }
@@ -35,7 +35,6 @@ void Vehicle::update(LocalSharedMemory &iLSM)
     {
         initializeStateSize();
         initializeVehicle();
-        cout<<"skipping one iteration"<<endl;
         return;
     }
     
@@ -43,6 +42,7 @@ void Vehicle::update(LocalSharedMemory &iLSM)
     computeCruiseState(iLSM);
     computeQueueState(iLSM);
     computeChargingState(iLSM);
+    computeMaxFaultsPerHr(iLSM);
 }
 
 /*
@@ -147,7 +147,7 @@ void Vehicle::computeCruiseState(LocalSharedMemory &iLSM)
     }
     
     sVehicleState(ITR) =  VehicleState::CRUISE;
-    cout<<"Vehicle "<< getComponentName() <<" in Cruise"<<endl;
+    //cout<<"Vehicle "<< getComponentName() <<" in Cruise"<<endl;
 }
 
 /*
@@ -165,7 +165,7 @@ void Vehicle::computeQueueState(LocalSharedMemory &iLSM)
     sTimeInQueueTotal(ITR) = sTimeInQueueTotal(ITR - 1) + (DT * SEC2HR);
     sVehicleState(ITR)     = VehicleState::QUEUE;
     
-    cout<<"Vehicle "<< getComponentName() <<" in Queue"<<endl;
+    //cout<<"Vehicle "<< getComponentName() <<" in Queue"<<endl;
 }
 
 /*
@@ -194,9 +194,57 @@ void Vehicle::computeChargingState(LocalSharedMemory &iLSM)
     }
     
     sVehicleState(ITR) = VehicleState::CHARGING;
-    cout<<"Vehicle "<< getComponentName() <<" in Charging"<<endl;
+    //cout<<"Vehicle "<< getComponentName() <<" in Charging"<<endl;
 }
 
+/*
+ The function generates max faults per hr with a given fault probability.
+ The maximum resolution of the fault probability is attempting by using the
+ entire scale of RAND_MAX when computing the probability.
+*/
+
+void Vehicle::computeMaxFaultsPerHr(LocalSharedMemory &iLSM)
+{
+    long long t1 = 0;
+    
+    // Random Seed for initialization;
+    // If unique seed option is used, new seed is not generated at runtime.
+    // this is useful for debugging purposes
+    if(iLSM.getOptUniqueSeedForRand() != 1)
+    {
+        // Use High resolution clock to ensure that the seed is changed
+        // at every iteration of the for loop.
+        t1 = chrono::high_resolution_clock::now().time_since_epoch().count();
+        srand(static_cast<unsigned int>(t1));
+    }
+
+    // Since rand() returns a number between (0,RAND_MAX), the chance that
+    // to get the maximum resolution, we multiply iFaultProbability with RAND_MAX
+    // eg. if rand() % 100 < 75 has 75% probability of being true. Since
+    // rand() % RAND_MAX = rand(), the funciton follows.
+    
+    double wFaultProbability = cFaultProbPerHr(0) * SEC2HR * DT;
+    
+    if((wFaultProbability * RAND_MAX) < 1.0 && ITR == 1)
+    {
+        cout<<"Fault probab issue, Increase time step, probability of simulating faults is too low"<< endl;
+    }
+    //cout<<"rand is "<<rand()<<" Fault probab is "<<(int)(wFaultProbability * RAND_MAX)<<endl;
+    //cout<<"Truth value is "<< (rand() < (wFaultProbability * RAND_MAX))<<endl;
+    //cout<<"rand max is " << RAND_MAX<<endl;
+    
+    bool wFaultOccured = (rand()) < (wFaultProbability * RAND_MAX);
+    
+    if (wFaultOccured != 0)
+    {
+        sMaxNumOfFaults[ITR] = sMaxNumOfFaults[ITR-1] + 1;
+        cout<<endl<<"Fault Occured on "<<getComponentName()<<endl;
+    }
+    else
+    {
+        sMaxNumOfFaults[ITR] = sMaxNumOfFaults[ITR-1];
+    }
+}
 
 /*
  Initialize Vehicle parameters based on vehicle name
@@ -275,12 +323,23 @@ int Vehicle::getVehicleState(LocalSharedMemory &iLSM)
 
 void Vehicle::saveCollect(LocalSharedMemory &iLSM)
 {
-    sVehicleState.save(iLSM.getGenDir()      + getComponentName() +  "_sVehicleState.txt",      arma::raw_ascii);
-    sBatteryCharge.save(iLSM.getGenDir()     + getComponentName() +  "_sBatteryCharge.txt",     arma::raw_ascii);
-    sTimeInFlightTotal.save(iLSM.getGenDir() + getComponentName() +  "_sTimeInFlightTotal.txt", arma::raw_ascii);
-    sTimeInQueueTotal.save(iLSM.getGenDir()  + getComponentName() +  "_sTimeInQueueTotal.txt",  arma::raw_ascii);
-    sTimeChargingTotal.save(iLSM.getGenDir() + getComponentName() +  "_sTimeChargingTotal.txt", arma::raw_ascii);
-    sTimePassengerHrs.save(iLSM.getGenDir()  + getComponentName() +  "_sTimePassengerHrs.txt",  arma::raw_ascii);
-    sDistanceTravelled.save(iLSM.getGenDir() + getComponentName() +  "_sDistanceTravelled.txt", arma::raw_ascii);
-    sMaxNumOfFaults.save(iLSM.getGenDir()    + getComponentName() +  "_sMaxNumOfFaults.txt",    arma::raw_ascii);
+    string wPrintName = to_string(getComponentId()) + "_" + getComponentName();
+    
+    sVehicleState.save(iLSM.getGenDir()      + wPrintName +  "_sVehicleState.txt",      arma::raw_ascii);
+    sBatteryCharge.save(iLSM.getGenDir()     + wPrintName +  "_sBatteryCharge.txt",     arma::raw_ascii);
+    sTimeInFlightTotal.save(iLSM.getGenDir() + wPrintName +  "_sTimeInFlightTotal.txt", arma::raw_ascii);
+    sTimeInQueueTotal.save(iLSM.getGenDir()  + wPrintName +  "_sTimeInQueueTotal.txt",  arma::raw_ascii);
+    sTimeChargingTotal.save(iLSM.getGenDir() + wPrintName +  "_sTimeChargingTotal.txt", arma::raw_ascii);
+    sTimePassengerHrs.save(iLSM.getGenDir()  + wPrintName +  "_sTimePassengerHrs.txt",  arma::raw_ascii);
+    sDistanceTravelled.save(iLSM.getGenDir() + wPrintName +  "_sDistanceTravelled.txt", arma::raw_ascii);
+    sMaxNumOfFaults.save(iLSM.getGenDir()    + wPrintName +  "_sMaxNumOfFaults.txt",    arma::raw_ascii);
 }
+
+// Getters based of iterators
+double Vehicle::getTimeInFlightTotal(LocalSharedMemory &iLSM) { return  sTimeInFlightTotal(ITR); }
+double Vehicle::getTimeInQueueTotal(LocalSharedMemory &iLSM)  { return  sTimeInQueueTotal(ITR); }
+double Vehicle::getTimeChargingTotal(LocalSharedMemory &iLSM) { return  sTimeChargingTotal(ITR); }
+double Vehicle::getTimePassengerHrs(LocalSharedMemory &iLSM)  { return  sTimePassengerHrs(ITR); }
+double Vehicle::getDistanceTravelled(LocalSharedMemory &iLSM) { return  sDistanceTravelled(ITR); }
+double Vehicle::getMaxNumOfFaults(LocalSharedMemory &iLSM)    { return  sMaxNumOfFaults(ITR); }
+

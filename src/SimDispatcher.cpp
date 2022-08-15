@@ -119,8 +119,8 @@ void SimDispatcher::startSimulation(LocalSharedMemory &iLSM)
             mSimulationTime(0) = cSimStartTime;
         }
         
-        // cout<<"\r"<< " Sim Time is :"<< mSimulationTime(i)<<"/"<< cSimEndTime;
-        cout<< " Sim Time is :"<< mSimulationTime(i)<<"/"<< cSimEndTime<<endl;
+        cout<<"\r"<< " Sim Time is :"<< mSimulationTime(i)<<"/"<< cSimEndTime;
+        //cout<< " Sim Time is :"<< mSimulationTime(i)<<"/"<< cSimEndTime<<endl;
         // Dispatch component list
         dispatchSimComponents(iLSM);
         
