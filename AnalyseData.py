@@ -37,15 +37,9 @@ def makeGlobalResults(filenames):
               )
 
     # Create x and y buttons
-    x_buttons = []
     y_buttons = []
 
     for column in data.columns:
-        x_buttons.append(dict(method='restyle',
-                              label=column,
-                              args=[{'x': [data[column]]}]
-                              )
-                         )
     
         y_buttons.append(dict(method='restyle',
                               label=column,
@@ -54,8 +48,7 @@ def makeGlobalResults(filenames):
                          )
 
     # Pass buttons to the updatemenus argument
-    fig.update_layout(updatemenus=[dict(buttons=x_buttons, showactive = True, direction='up', x=0.5, y=-0.1),
-                                   dict(buttons=y_buttons, showactive = True, direction='down', x=-0.01, y=0.5)])
+    fig.update_layout(updatemenus=[dict(buttons=y_buttons, showactive = True, direction='down', x=-0.01, y=0.5)], title='Evtol Simulation Collected Data')
 
     fig.write_html('results.html', auto_open=True)
 
