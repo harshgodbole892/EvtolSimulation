@@ -13,6 +13,7 @@ Description   : Used to share variables across objects in the simulation.
 #include <fstream>
 #include <stdio.h>
 #include <map>
+#include <mutex>
 
 using namespace std;
 #ifndef LOCALSHAREDMEMORY_H
@@ -39,11 +40,7 @@ public:
     map<string, int> getVehicleTypeRevMap(){return mVehicleTypeRevMap; }
     
     // Setters for private variables:
-    void setSimulationDuration(double iInput){  cSimulationDuration = iInput; }
-    void setSimulationTimeStep(double iInput){  cSimulationTimeStep = iInput; }
-    void setIterationIndex(int iInput){  mIterationIndex = iInput; }
-    void setNumberOfVehicles(int iInput){ cNumOfVehicles = iInput; }
-    void setMaxChargingStations(int iInput){ cMaxChargingStations = iInput; }
+    void setIterationIndex(int iInput);
     
     
     // Constructor:
@@ -77,9 +74,19 @@ private:
     map<int, string> mVehicleTypeMap;     // Vehicle Type map: From int key to String
     map<string, int> mVehicleTypeRevMap;  // Vehicle Type reverse map: from string to type
     
+    // Mutex for public write functions:
+    mutex mCommonMutex;
+    
     // Simulation Options:
     int oUseUniqueSeedForRand{0};
     
+    // Private functions for setters for precautions for thread safety:
+    void setSimulationDuration(double iInput){  cSimulationDuration = iInput; }
+    void setSimulationTimeStep(double iInput){  cSimulationTimeStep = iInput; }
+    void setNumberOfVehicles(int iInput){ cNumOfVehicles = iInput; }
+    void setMaxChargingStations(int iInput){ cMaxChargingStations = iInput; }
+
 };
 
 #endif
+

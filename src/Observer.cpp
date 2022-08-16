@@ -49,7 +49,7 @@ Observer::Observer(vector<Vehicle> &iVehicleVector, int iComponentId, string iNa
 }
 
 /*
-    Initialize size of all:
+    Initialize size of all collected variables:
 */
 
 void Observer::initializeStateSize()

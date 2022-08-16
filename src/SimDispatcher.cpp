@@ -11,9 +11,11 @@ Description   : Generic simulation component class which provides a template for
 */
 
 // Imports
+#include <thread>
 #include "LocalSharedMemory.hpp"
 #include "SimComponent.hpp"
 #include "SimDispatcher.hpp"
+#include "CommonDefines.hpp"
 
 /*
  Constructor
@@ -56,7 +58,37 @@ void SimDispatcher::dispatchSimComponents(LocalSharedMemory &iLSM)
     // components in the same order as the the addition occurs
     // by calling their update function
     
-    for(int i = 0; i < mSimComponents.size(); i++)
+    // Get number of Thread safe components:
+    int wNumOfThreadSafeComponents = iLSM.getNumOfVehicles();
+    vector<thread> wThreads;
+    
+    // Dispatch each vehicle as its own thread
+    for(int i = 0; i < wNumOfThreadSafeComponents; i++)
+    {
+        // Check if any component is Null by accident
+        if (mSimComponents[i] == NULL)
+        {
+            cout<< "SimComponent at index "<< i <<" is NULL"<<endl;
+            continue;
+        }
+        else
+        {
+            wThreads.push_back(thread(&SimComponent::update, mSimComponents[i], ref(iLSM)));
+        }
+    }
+    
+    // Wait for vehicle threads to complete before starting the dispatch of
+    // other components
+    for(int i = 0; i < wNumOfThreadSafeComponents ; i++)
+    {
+        wThreads[i].join();
+    }
+    
+    
+    // Charging queue and the observer cannot be dispathed before all the
+    // vehicle threads have executed, otherwise we may have a race condition
+    // on the pop method
+    for (int i = wNumOfThreadSafeComponents; i < mSimComponents.size(); i++)
     {
         // Check if any component is Null by accident
         if (mSimComponents[i] == NULL)
@@ -119,8 +151,8 @@ void SimDispatcher::startSimulation(LocalSharedMemory &iLSM)
             mSimulationTime(0) = cSimStartTime;
         }
         
-        cout<<"\r"<< " Sim Time is :"<< mSimulationTime(i)<<"/"<< cSimEndTime;
-        //cout<< " Sim Time is :"<< mSimulationTime(i)<<"/"<< cSimEndTime<<endl;
+        cout<<"\r"<< " Sim Time is :"<< (mSimulationTime(i))<<" sec / "<< (cSimEndTime) << " sec";
+        // cout<< " Sim Time is :"<< mSimulationTime(i)<<"/"<< cSimEndTime<<endl;
         // Dispatch component list
         dispatchSimComponents(iLSM);
         
@@ -129,7 +161,6 @@ void SimDispatcher::startSimulation(LocalSharedMemory &iLSM)
     
     // Save Collects to disk:
     saveCollects(iLSM);
-    
     
 }
 

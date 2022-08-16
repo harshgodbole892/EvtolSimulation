@@ -9,6 +9,7 @@ Description   : Used to share variables across objects in the simulation.
 */
 
 #include <stdlib.h>
+#include <mutex>
 #include "LocalSharedMemory.hpp"
 #include "CommonDefines.hpp"
 
@@ -63,4 +64,19 @@ void LocalSharedMemory::initializeModelParameters()
     
     cNumOfVehicles = 20;
     cMaxChargingStations = 3;
+}
+
+/*
+ This is the only function that can possibly be called by 2 threads at the same time.
+ With the structure of the simulation as is, this will never happen.
+ 
+ Mutex is included in here only as a demonstator.
+*/
+void LocalSharedMemory::setIterationIndex(int iInput)
+{
+    mCommonMutex.lock();
+
+    mIterationIndex = iInput;
+
+    mCommonMutex.unlock();
 }
