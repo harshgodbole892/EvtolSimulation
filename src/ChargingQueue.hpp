@@ -41,7 +41,9 @@ public:
     ChargingQueue(vector<Vehicle> &iVehicleVector, int iComponentId, string iName, LocalSharedMemory &iLSM);
     
     // Member functions:
+    void initializeStateSize();
     void update(LocalSharedMemory &iLSM);
+    void saveCollect(LocalSharedMemory &iLSM);
 
     
 private:
@@ -54,6 +56,7 @@ private:
     queue<Vehicle*> mChargingQueuePtr;
     
     // State Variables:
+    arma::vec sNumOfChargersInUse;
     
     // Collectable state variables:
     

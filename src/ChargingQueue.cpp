@@ -33,10 +33,25 @@ ChargingQueue::ChargingQueue(vector<Vehicle> &iVehicleVector, int iComponentId, 
 }
 
 /*
+    Initialize size of all collected variables:
+*/
+
+void ChargingQueue::initializeStateSize()
+{
+    // Number of chargers currently in use
+    sNumOfChargersInUse.set_size(getCollectSize());
+    sNumOfChargersInUse.zeros(getCollectSize());
+
+}
+/*
  Initialize Global Simulation parameters
 */
 void ChargingQueue::update(LocalSharedMemory &iLSM)
 {
+    if(ITR == 0)
+    {
+        initializeStateSize();
+    }
     // Remain initialized for 1 iteration to initialize states.
     
     int wVehiclesInCharging = 0;
@@ -57,6 +72,9 @@ void ChargingQueue::update(LocalSharedMemory &iLSM)
         }
     }
     
+    // Store current number of chargers in use:
+    sNumOfChargersInUse(ITR) = wVehiclesInCharging;
+    
     // If any chargers are free, add the elements from the queue into charging state
     while (wVehiclesInCharging < cMaxChargingStations)
     {
@@ -68,4 +86,16 @@ void ChargingQueue::update(LocalSharedMemory &iLSM)
         wVehiclesInCharging++;
     }
 }
+
+/*
+ Save collected data
+*/
+
+void ChargingQueue::saveCollect(LocalSharedMemory &iLSM)
+{
+    string wPrintName = to_string(getComponentId()) + "_" + getComponentName();
+    
+    sNumOfChargersInUse.save(iLSM.getGenDir()   + wPrintName +  "_sNumOfChargersInUse.txt",     arma::raw_ascii);
+}
+
 
