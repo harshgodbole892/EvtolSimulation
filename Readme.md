@@ -12,26 +12,31 @@ Please clone the git repos and follow the installation directions in the readme 
 
 ## Building the solution
 
-CMake is used to configure the cross platform build. Clone this repository and open a terminal at its root folder that includes the CMakeLists.txt file. Open the CMakeLists.txt and mofify the following line to ensure that armadillo libs and include directories are correctly set. Also set the project home directory to be at the clone location of this repository
+CMake is used to configure the cross platform build. 
+- Clone this repository and open a terminal at its root folder that includes the CMakeLists.txt file.
+- Open the CMakeLists.txt and mofify the following line to ensure that armadillo libs and include directories are correctly set. 
+- Also set the project home directory to be at the clone location of this repository
+
 '''
 set(ARMADILLO_INCLUDE_DIR /Users/username/Documents/Github/armadillo-code/include)
 set(ARMADILLO_LIBRARIES /Users/username/Documents/Github/armadillo-code)
 set(PROJECT_HOME_DIR "/Users/username/Documents/Github/EvtolSimulation" Global)
 '''
 
-Next, use the following commands to build.
+- Next, use the following commands to build.
 '''
 cmake -S . -B build
 cmake --build build
 '''
 
-Once built successfully, to run the exe and unit tests, the correct environment variable needs to be present and the generated directory needs to be created or cleaned. Use RunEvtolSimulaiton.sh and RunEvtolSimulationTests.sh to execute this operation.
+- Once built successfully, to run the exe and unit tests, the correct environment variable needs to be present and the generated directory needs to be created or cleaned. Use RunEvtolSimulaiton.sh and RunEvtolSimulationTests.sh to execute this operation.
+
 '''
 ./RunEvtolSimulation.sh
 ./RunEvtolSimulationTests.sh
 '''
 
-Finally, once the tests pass and the simulation is run, you can use python to run AnalyzeData.py to generate results in the results folder. Results of a randomized simulation are already provided in an html format, but are overwritten with every run of AnalyzeData.py
+- Finally, once the tests pass and the simulation is run, you can use python to run AnalyzeData.py to generate results in the results folder. Results of a randomized simulation are already provided in an html format, but are overwritten with every run of AnalyzeData.py
 
 ## Solution Structure
 
