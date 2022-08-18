@@ -6,6 +6,7 @@ This project requires the following external libraries to work.
 - Armadillo : https://gitlab.com/conradsnicta/armadillo-code
 - GoogleTest: https://github.com/google/googletest
 - CMake : https://cmake.org
+
 Please clone the git repos and follow the installation directions in the readme of the repositories for standard installation.
 
 
