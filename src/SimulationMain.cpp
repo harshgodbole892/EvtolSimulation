@@ -30,7 +30,6 @@
 
 
 using namespace std;
-using namespace arma;
 
 
 // Randomly generate vector of 20 vehicles, one of each type
