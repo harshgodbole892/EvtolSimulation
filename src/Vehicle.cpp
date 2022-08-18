@@ -40,6 +40,7 @@ void Vehicle::update(LocalSharedMemory &iLSM)
     
     // Start State machine:
     computeCruiseState(iLSM);
+    computeDischargedState(iLSM);
     computeQueueState(iLSM);
     computeChargingState(iLSM);
     computeMaxFaultsPerHr(iLSM);
@@ -127,12 +128,13 @@ void Vehicle::computeCruiseState(LocalSharedMemory &iLSM)
     {
         sBatteryCharge(ITR)     = sBatteryCharge(ITR - 1);
         sTimeInFlightTotal(ITR) = sTimeInFlightTotal(ITR - 1);
-        sTimePassengerHrs(ITR) = sTimePassengerHrs(ITR - 1);
+        sTimePassengerHrs(ITR)  = sTimePassengerHrs(ITR - 1);
         sDistanceTravelled(ITR) = sDistanceTravelled(ITR - 1);
         
         return;
     }
     
+    // Compute loss of battery with energy use in flight
     double wBatteryChargeLoss = -1.0 * cEnergyUseAtCruise(0) * cCruiseSpeed(0) * (DT * SEC2HR);
     
     sBatteryCharge(ITR)     = sBatteryCharge(ITR - 1)      + wBatteryChargeLoss;
@@ -148,6 +150,25 @@ void Vehicle::computeCruiseState(LocalSharedMemory &iLSM)
     
     sVehicleState(ITR) =  VehicleState::CRUISE;
     //cout<<"Vehicle "<< getComponentName() <<" in Cruise"<<endl;
+}
+
+/*
+ Compute vehicle states when discharged
+*/
+void Vehicle::computeDischargedState(LocalSharedMemory &iLSM)
+{
+    // Exit function if not in disharged state
+    if (sVehicleState(ITR-1) != VehicleState::DISCHARGED)
+    {
+        return;
+    }
+    
+    sVehicleState(ITR)     = VehicleState::DISCHARGED;
+    
+    if (VEHICLE_DEBUG == 1)
+    {
+        cout<<"Vehicle "<< getComponentName() <<" in discharge"<<endl;
+    }
 }
 
 /*
@@ -238,7 +259,11 @@ void Vehicle::computeMaxFaultsPerHr(LocalSharedMemory &iLSM)
     if (wFaultOccured != 0)
     {
         sMaxNumOfFaults[ITR] = sMaxNumOfFaults[ITR-1] + 1;
-        cout<<endl<<"Fault Occured on "<<getComponentName()<<endl;
+        
+        if(VEHICLE_DEBUG == 1)
+        {
+            cout<<endl<<"Fault Occured on "<<getComponentName()<<endl;
+        }
     }
     else
     {
@@ -336,6 +361,7 @@ void Vehicle::saveCollect(LocalSharedMemory &iLSM)
 }
 
 // Getters based of iterators
+double Vehicle::getBatteryCharge(LocalSharedMemory &iLSM)     { return  sBatteryCharge(ITR); }
 double Vehicle::getTimeInFlightTotal(LocalSharedMemory &iLSM) { return  sTimeInFlightTotal(ITR); }
 double Vehicle::getTimeInQueueTotal(LocalSharedMemory &iLSM)  { return  sTimeInQueueTotal(ITR); }
 double Vehicle::getTimeChargingTotal(LocalSharedMemory &iLSM) { return  sTimeChargingTotal(ITR); }

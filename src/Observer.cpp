@@ -73,6 +73,10 @@ void Observer::initializeStateSize()
     // Average Passenger Miles
     sTotalPassengerMiles.set_size(getCollectSize(), mNumOfTypes);
     sTotalPassengerMiles.zeros(getCollectSize(), mNumOfTypes);
+    
+    // Number of Vehicles spawned
+    sVehicleCount.set_size(getCollectSize(), mNumOfTypes);
+    sVehicleCount.zeros(getCollectSize(), mNumOfTypes);
         
 }
 
@@ -81,6 +85,7 @@ void Observer::initializeStateSize()
 */
 void Observer::update(LocalSharedMemory &iLSM)
 {
+    // Initialize states:
     if(ITR == 0)
     {
         initializeStateSize();
@@ -109,11 +114,13 @@ void Observer::update(LocalSharedMemory &iLSM)
         }
 
         // Compute metrics
+        // Total time in flight is time in flt for each / mNumOfVehicles of that type
         sAvgTimeInFlight(ITR, wVehicleTypeInt)     += mVehicleVectorPtr[i]->getTimeInFlightTotal(iLSM)  / mNumOfVehicleType[wVehicleTypeInt];
         sAvgTimeInCharging(ITR, wVehicleTypeInt)   += mVehicleVectorPtr[i]->getTimeChargingTotal(iLSM)  / mNumOfVehicleType[wVehicleTypeInt];
         sAvgTimeInQueue(ITR, wVehicleTypeInt)      += mVehicleVectorPtr[i]->getTimeInQueueTotal(iLSM)   / mNumOfVehicleType[wVehicleTypeInt];
         sTotalPassengerMiles(ITR, wVehicleTypeInt) += mVehicleVectorPtr[i]->getTimePassengerHrs(iLSM);
         sMaxNumOfFaults(ITR, wVehicleTypeInt)      += mVehicleVectorPtr[i]->getMaxNumOfFaults(iLSM);
+        sVehicleCount(ITR, wVehicleTypeInt)         = mNumOfVehicleType[wVehicleTypeInt];
     }
 }
 
@@ -130,5 +137,7 @@ void Observer::saveCollect(LocalSharedMemory &iLSM)
     sAvgTimeInQueue.save(iLSM.getGenDir()       + wPrintName +  "_sAvgTimeInQueue.txt",      arma::csv_ascii);
     sTotalPassengerMiles.save(iLSM.getGenDir()  + wPrintName +  "_sTotalPassengerMiles.txt", arma::csv_ascii);
     sMaxNumOfFaults.save(iLSM.getGenDir()       + wPrintName +  "_sMaxNumOfFaults.txt",      arma::csv_ascii);
+    sVehicleCount.save(iLSM.getGenDir()         + wPrintName +  "_sVehicleCount.txt",        arma::csv_ascii);
+    
 }
 

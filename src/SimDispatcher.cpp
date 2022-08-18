@@ -12,6 +12,8 @@ Description   : Generic simulation component class which provides a template for
 
 // Imports
 #include <thread>
+#include <chrono>
+#include <unistd.h>
 #include "LocalSharedMemory.hpp"
 #include "SimComponent.hpp"
 #include "SimDispatcher.hpp"
@@ -37,6 +39,8 @@ void SimDispatcher::initializeSimulation()
     cout << "Dispatcher: Number of Iterations Estimated "<<mCollectSize<<endl;
     mSimulationTime.set_size(mCollectSize);
     mSimulationTime.zeros(mCollectSize);
+    
+    oRealTimeExecution = 1;
 }
 
 /*
@@ -135,10 +139,17 @@ void SimDispatcher::saveCollects(LocalSharedMemory &iLSM)
 */
 void SimDispatcher::startSimulation(LocalSharedMemory &iLSM)
 {
+    chrono::time_point<chrono::steady_clock> wClockBegin;
+    chrono::duration<double> wClockElapsed;
+    
+    chrono::milliseconds wTimeThreshold((int)(DT * 1000.0/60.0)); // threshold in milliseconds calibrated for 1 rt sec = 1 min
     
     // For each time step, dispatch the entry point once
-    for(long long int i=0; i<mCollectSize; i++)
+    for(long long int i=0; i < mCollectSize ; i++)
     {
+        // Start time clock
+        wClockBegin = std::chrono::steady_clock::now();
+        
         // Synchronize the time step and update time variables:
         iLSM.setIterationIndex(i);
         
@@ -151,10 +162,30 @@ void SimDispatcher::startSimulation(LocalSharedMemory &iLSM)
             mSimulationTime(0) = cSimStartTime;
         }
         
-        cout<<"\r"<< " Sim Time is :"<< (mSimulationTime(i))<<" sec / "<< (cSimEndTime) << " sec";
-        // cout<< " Sim Time is :"<< mSimulationTime(i)<<"/"<< cSimEndTime<<endl;
+        // Display output
+        cout<<"\r"<<"Sim Time is :"<< (mSimulationTime(i))<<" sec / "<< (cSimEndTime) << " sec"<<flush;
+        
         // Dispatch component list
         dispatchSimComponents(iLSM);
+        
+        wClockElapsed = std::chrono::steady_clock::now() - wClockBegin;
+        
+        // If program is too slow
+        if(chrono::duration_cast<chrono::milliseconds>(wClockElapsed) > wTimeThreshold)
+        {
+            cout<<"Dispatcher too slow, gives me the 'Jitters' "<<endl;
+            continue;
+        }
+        
+        // Do not wait if not real time.
+        if(oRealTimeExecution == 0) continue;
+        
+        // otherwise wait until the time threshold has reached
+        while(chrono::duration_cast<chrono::milliseconds>(wClockElapsed).count()< wTimeThreshold.count())
+        {
+            wClockElapsed = (chrono::steady_clock::now() - wClockBegin);
+        }
+        //cout<<"Waited for "<<std::chrono::duration_cast<std::chrono::milliseconds>(wClockElapsed).count()<<endl;
         
     }
     cout<<endl;

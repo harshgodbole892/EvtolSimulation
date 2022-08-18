@@ -46,6 +46,9 @@ private:
     double cSimEndTime{0.1};
     long long int mCollectSize{0};
     
+    int oRealTimeExecution{1};    // Real time execution option: 1 - Real time
+                                  // 2 - Faster than real time
+    
     // Member objects:
     arma::vec mSimulationTime = arma::zeros<arma::vec>(1);
     vector<SimComponent*> mSimComponents;

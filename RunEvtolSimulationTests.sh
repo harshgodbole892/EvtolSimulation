@@ -10,7 +10,7 @@ mkdir generated
 fi
 export PROJECT_HOME_DIR=$(pwd)
 # Run generated Files!
-./bin/EvtolSimulation
+./build/EvtolSimulationTests
 ###
 ##### << 1 >> End of section.
 ###

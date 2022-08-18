@@ -5,6 +5,7 @@ set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 set(ARMADILLO_INCLUDE_DIR /Users/Harsh/Documents/Github/armadillo-code/include)
 set(ARMADILLO_LIBRARIES /Users/Harsh/Documents/Github/armadillo-code)
+set(PROJECT_HOME_DIR "/Users/Harsh/Documents/Github/EvtolSimulation" Global)
 
 # Set the project name
 project(EvtolSimulation VERSION 1.0)
@@ -24,10 +25,22 @@ include_directories(${ARMADILLO_INCLUDE_DIR})
 link_directories(${ARMADILLO_LIBRARIES})
 
 # Add sources
-file(GLOB SOURCES "src/*.cpp")
+file(GLOB SOURCES src/Vehicle.cpp
+                  src/ChargingQueue.cpp
+                  src/LocalSharedMemory.cpp
+                  src/Observer.cpp
+                  src/SimComponent.cpp
+                  src/SimDispatcher.cpp)
 
 # Add executable
-add_executable(EvtolSimulation ${SOURCES})
+add_executable(EvtolSimulation ${SOURCES} src/SimulationMain.cpp)
 
-
+# Testing Framework
+file(GLOB TESTS "tests/*.cpp")
+add_executable(EvtolSimulationTests ${SOURCES} ${TESTS})
+target_link_libraries(
+  EvtolSimulationTests
+  GTest::gtest_main
+)
+include(GoogleTest)
 

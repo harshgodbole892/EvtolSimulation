@@ -36,7 +36,9 @@ public:
     void setEnergyUseAtCruise(double iInput){ cEnergyUseAtCruise(0) = iInput;}
     void setPassengerCount(int    iInput)   { cPassengerCount(0)    = static_cast<double>(iInput);}
     void setFaultProbPerHr(double iInput)   { cFaultProbPerHr(0)    = iInput;}
+    void setVehicleInitMode(int iInput)     { oVehicleInitMode      = iInput;}
     void setVehicleState(int iState, LocalSharedMemory &iLSM);
+
     
     // getters:
     double getCruiseSpeed()      { return cCruiseSpeed(0)      ;}
@@ -45,14 +47,16 @@ public:
     double getEnergyUseAtCruise(){ return cEnergyUseAtCruise(0);}
     double getPassengerCount()   { return cPassengerCount(0)   ;}
     double getFaultProbPerHr()   { return cFaultProbPerHr(0)   ;}
+    int    getVehicleInitMode()  { return oVehicleInitMode     ;}
     
+    double getBatteryCharge(LocalSharedMemory &iLSM);
     double getTimeInFlightTotal(LocalSharedMemory &iLSM);
     double getTimeInQueueTotal(LocalSharedMemory &iLSM);
     double getTimeChargingTotal(LocalSharedMemory &iLSM);
     double getTimePassengerHrs(LocalSharedMemory &iLSM);
     double getDistanceTravelled(LocalSharedMemory &iLSM);
     double getMaxNumOfFaults(LocalSharedMemory &iLSM);
-
+    
     int    getVehicleState(LocalSharedMemory &LSM);
     
     // Constructor:
@@ -64,6 +68,7 @@ public:
     void loadParameters(string iName, LocalSharedMemory &iLSM);
     void update(LocalSharedMemory &LSM);
     void computeCruiseState(LocalSharedMemory &LSM);
+    void computeDischargedState(LocalSharedMemory &iLSM);
     void computeQueueState(LocalSharedMemory &LSM);
     void computeChargingState(LocalSharedMemory &LSM);
     void computeMaxFaultsPerHr(LocalSharedMemory &iLSM);

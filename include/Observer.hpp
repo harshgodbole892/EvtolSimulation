@@ -31,12 +31,6 @@ class Observer : public SimComponent
 {
 public:
     
-    // setters:
-    //void setVariable(int iInput){ = iInput;}
-    
-    // getters:
-    //int getVariable() {return ;}
-    
     // Constructor:
     Observer(vector<Vehicle> &iVehicleVector, int iComponentId, string iName, LocalSharedMemory &iLSM);
     
@@ -51,21 +45,22 @@ private:
     // Constants:
     
     // Member variables:
-    vector<Vehicle*> mVehicleVectorPtr;
-    vector<int> mNumOfVehicleType;
+    vector<Vehicle*> mVehicleVectorPtr;    // Pointer to spawned vehicle vector
+    vector<int> mNumOfVehicleType;         // Total num of vehicles spawned for a given type
     
-    map<int, string> mVehicleTypeMap;
-    map<string, int> mVehicleTypeRevMap;
+    map<int, string> mVehicleTypeMap;      // From vehicle type id to string
+    map<string, int> mVehicleTypeRevMap;   // From string to vehicle type id
     
     int mNumOfTypes{0};
     
     // State Variables:
     
-    arma::mat sAvgTimeInFlight;
-    arma::mat sAvgTimeInCharging;
-    arma::mat sAvgTimeInQueue;
-    arma::mat sMaxNumOfFaults;
-    arma::mat sTotalPassengerMiles;
+    arma::mat sAvgTimeInFlight;       // Avg time in flight per vehicle type (hrs)
+    arma::mat sAvgTimeInCharging;     // Avg time charging per vehicle type (hrs)
+    arma::mat sAvgTimeInQueue;        // Avg time in queue per vehicle type (hrs)
+    arma::mat sMaxNumOfFaults;        // Max number of total faults per vehicle type
+    arma::mat sTotalPassengerMiles;   // Total passenger miles per vehicle type (passenger-miles)
+    arma::mat sVehicleCount;          // Number of vehicles of a given vehicle type
     
     // Collectable state variables:
     
