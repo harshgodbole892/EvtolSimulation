@@ -187,6 +187,8 @@ void SimDispatcher::startSimulation(LocalSharedMemory &iLSM)
         // otherwise wait until the time threshold has reached
         while(chrono::duration_cast<chrono::milliseconds>(wClockElapsed).count()< wTimeThreshold.count())
         {
+            // Check condition every 100 milliseconds, to avoid overstressing the CPU
+            this_thread::sleep_for (chrono::milliseconds(1));
             wClockElapsed = (chrono::steady_clock::now() - wClockBegin);
         }
         
