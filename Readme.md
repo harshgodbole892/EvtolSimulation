@@ -51,7 +51,7 @@ The two main types of classes included in the solution are **Simulation Support*
 3. The SimulationMain function is used for the assebly of the simualtion and random initialization of the vehicles. 
 4. The CommonDefines file defines enums and preprocessor definitions that improve code readability.
 
-[Simulation Flow Diagram](/docs/DataFlowDiagram.svg)
+![Simulation Flow Diagram](/docs/DataFlowDiagram.svg)
 
 ## Class Descriptions: 
 
