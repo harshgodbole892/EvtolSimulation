@@ -6,6 +6,8 @@ Class Name    : Local Shared Memory
 Class Type    : Simluation Support
  
 Description   : Used to share variables across objects in the simulation.
+                This class is called Local shared memory so as not to confuse
+                it with process shared memory.
 */
 
 #include <iostream>

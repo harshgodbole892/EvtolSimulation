@@ -44,8 +44,8 @@ void SimDispatcher::initializeSimulation()
 }
 
 /*
- The addComponent function is used to correctly initialize a component and save its reference
- in mSimComponents.
+ The addComponent function is used to correctly initialize a component and
+ save its reference in mSimComponents.
 */
 void SimDispatcher::addComponent(SimComponent &iSimComponent)
 {
