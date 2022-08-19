@@ -19,6 +19,7 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(googletest)
 
+find_package(Threads REQUIRED)
 # Bring the headers, library includes
 include_directories(include)
 include_directories(${ARMADILLO_INCLUDE_DIR})
@@ -34,6 +35,10 @@ file(GLOB SOURCES src/Vehicle.cpp
 
 # Add executable
 add_executable(EvtolSimulation ${SOURCES} src/SimulationMain.cpp)
+target_link_libraries(
+  EvtolSimulation
+  Threads::Threads
+)
 
 # Testing Framework
 file(GLOB TESTS "tests/*.cpp")
@@ -41,6 +46,7 @@ add_executable(EvtolSimulationTests ${SOURCES} ${TESTS})
 target_link_libraries(
   EvtolSimulationTests
   GTest::gtest_main
+  Threads::Threads
 )
 include(GoogleTest)
 
