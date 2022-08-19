@@ -13,7 +13,7 @@ Please clone the git repos and follow the installation directions in the readme 
 
 ## Building the solution
 
-CMake is used to configure the cross platform build. 
+CMake is used to configure the cross platform build. The build is only testes for macOs at the moment, so there may be buildtime/runtime issues that come up when working over a linux distribution.
 - Clone this repository and open a terminal at its root folder that includes the CMakeLists.txt file.
 - Open the CMakeLists.txt and modify the following line to ensure that armadillo libs and include directories are correctly set. 
 - Also set the project home directory to be at the clone location of this repository like the following example:
