@@ -48,10 +48,6 @@ public:
     // Constructor:
     LocalSharedMemory(string iProjectHomeDir);
     
-    // Internal functions:
-    void initializeSimulationParameters();
-    void initializeModelParameters();
-    void initializeEnvironmentVariables(string iProjectHomeDir);
 
 private:
     
@@ -87,6 +83,11 @@ private:
     void setSimulationTimeStep(double iInput){  cSimulationTimeStep = iInput; }
     void setNumberOfVehicles(int iInput){ cNumOfVehicles = iInput; }
     void setMaxChargingStations(int iInput){ cMaxChargingStations = iInput; }
+    
+    // Internal functions:
+    void initializeSimulationParameters();
+    void initializeModelParameters();
+    void initializeEnvironmentVariables(string iProjectHomeDir);
 
 };
 

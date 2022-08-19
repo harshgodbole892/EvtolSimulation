@@ -28,9 +28,9 @@
 #include "ChargingQueue.hpp"
 #include "Observer.hpp"
 
-
 using namespace std;
 
+#define SIMULATIONMAIN_DEBUG 0
 
 // Randomly generate vector of 20 vehicles, one of each type
 vector<Vehicle> createVehicleVector(LocalSharedMemory &iLSM)
@@ -57,11 +57,17 @@ vector<Vehicle> createVehicleVector(LocalSharedMemory &iLSM)
         cout<<"Creating "<<wNumOfTypes<<" Vehicles as it is greater than requested number of vehicles "<<wNumOfVehicles<<endl;
     }
     
+    cout<<"Creating "<<wNumOfVehicles<<" Vehicles"<<endl;
+    
     // Make 1 vehicle of each type
     for(int i = 1; i < (wNumOfTypes +1); i++)
     {
         wVehicleVector.push_back(Vehicle(i, wVehicleTypeMap.find(i)->second, iLSM));
-        cout<<"Making vehicle "<<i<<", Type "<<wVehicleTypeMap.find(i)->second<<endl;
+        
+        if (SIMULATIONMAIN_DEBUG)
+        {
+            cout<<"Making vehicle "<<i<<", Type "<<wVehicleTypeMap.find(i)->second<<endl;
+        }
     }
     
     // Make rest of the vehicles randomly
@@ -82,7 +88,11 @@ vector<Vehicle> createVehicleVector(LocalSharedMemory &iLSM)
         wRandInt = rand() % wNumOfTypes + 1;
         wRandVehicleType = wVehicleTypeMap.find(wRandInt)->second;
         
-        cout<<"Making vehicle "<<i<<", Type "<<wRandVehicleType<<endl;
+        if (SIMULATIONMAIN_DEBUG)
+        {
+            cout<<"Making vehicle "<<i<<", Type "<<wRandVehicleType<<endl;
+        }
+        
         wVehicleVector.push_back(Vehicle(i, wRandVehicleType, iLSM));
     }
     

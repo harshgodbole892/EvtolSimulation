@@ -20,6 +20,8 @@ using namespace std;
 #define SIMDISPATCHER_H
 #include "SimComponent.hpp"
 
+#define DISPATCHER_DEBUG 0
+
 class SimComponent;
 class LocalSharedMemory;
 
@@ -31,12 +33,9 @@ public:
     // Constructor:
     SimDispatcher(LocalSharedMemory &iLSMmake);
     
-    // Internal functions:
+    // Public functions:
     void addComponent(SimComponent &iSimComponent);
-    void initializeSimulation();
     void startSimulation(LocalSharedMemory &iLSM);
-    void saveCollects(LocalSharedMemory &iLSM);
-    void dispatchSimComponents(LocalSharedMemory &iLSM);
     
 private:
     
@@ -45,6 +44,7 @@ private:
     double cSimStartTime{0.0};
     double cSimEndTime{0.1};
     long long int mCollectSize{0};
+    int mNumOfThreadSafeComponents{0};
     
     int oRealTimeExecution{1};    // Real time execution option: 1 - Real time
                                   // 2 - Faster than real time
@@ -52,6 +52,12 @@ private:
     // Member objects:
     arma::vec mSimulationTime = arma::zeros<arma::vec>(1);
     vector<SimComponent*> mSimComponents;
+    
+    // Internal functions:
+    void initializeSimulation();
+    void dispatchSimComponents(LocalSharedMemory &iLSM);
+    void saveCollects(LocalSharedMemory &iLSM);
+    
 };
 
 #endif

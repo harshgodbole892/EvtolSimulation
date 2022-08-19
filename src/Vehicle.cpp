@@ -313,6 +313,7 @@ void Vehicle::loadParameters(string iName, LocalSharedMemory &iLSM)
     // Fault probability (faults / hr)
     wTemp = cFaultProbPerHr.load(iLSM.getParametersDir() + getComponentName() + "_cFaultProbPerHr.txt" , arma::csv_ascii);
     wLoaderSuccessful = wLoaderSuccessful & wTemp;
+    
     if(VEHICLE_DEBUG)
     {
         cout<<"cFaultProbPerHr: "<<cFaultProbPerHr(0)<<", ";
@@ -360,7 +361,7 @@ void Vehicle::saveCollect(LocalSharedMemory &iLSM)
     sMaxNumOfFaults.save(iLSM.getGenDir()    + wPrintName +  "_sMaxNumOfFaults.txt",    arma::raw_ascii);
 }
 
-// Getters based of iterators
+// Getters based off iterators
 double Vehicle::getBatteryCharge(LocalSharedMemory &iLSM)     { return  sBatteryCharge(ITR); }
 double Vehicle::getTimeInFlightTotal(LocalSharedMemory &iLSM) { return  sTimeInFlightTotal(ITR); }
 double Vehicle::getTimeInQueueTotal(LocalSharedMemory &iLSM)  { return  sTimeInQueueTotal(ITR); }

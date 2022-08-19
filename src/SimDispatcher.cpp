@@ -24,9 +24,15 @@ Description   : Generic simulation component class which provides a template for
 */
 SimDispatcher::SimDispatcher(LocalSharedMemory &iLSM)
 {
+    // Global Options:
     cSimEndTime     = iLSM.getSimulationDuration();
     cSimTimeStep    = iLSM.getSimulationTimeStep();
     cSimStartTime   = 0.0;
+    mNumOfThreadSafeComponents = iLSM.getNumOfVehicles();
+    
+    // Dispatcher Options:
+    oRealTimeExecution = 1;
+    
     initializeSimulation();
 }
 
@@ -35,12 +41,10 @@ SimDispatcher::SimDispatcher(LocalSharedMemory &iLSM)
 */
 void SimDispatcher::initializeSimulation()
 {
-    mCollectSize = static_cast<int> (cSimEndTime - cSimStartTime) / cSimTimeStep + 1;
+    mCollectSize = static_cast<long long int> ((cSimEndTime - cSimStartTime) / cSimTimeStep) + 1;
     cout << "Dispatcher: Number of Iterations Estimated "<<mCollectSize<<endl;
     mSimulationTime.set_size(mCollectSize);
     mSimulationTime.zeros(mCollectSize);
-    
-    oRealTimeExecution = 1;
 }
 
 /*
@@ -63,7 +67,7 @@ void SimDispatcher::dispatchSimComponents(LocalSharedMemory &iLSM)
     // by calling their update function
     
     // Get number of Thread safe components:
-    int wNumOfThreadSafeComponents = iLSM.getNumOfVehicles();
+    int wNumOfThreadSafeComponents = mNumOfThreadSafeComponents;
     vector<thread> wThreads;
     
     // Dispatch each vehicle as its own thread
@@ -153,7 +157,7 @@ void SimDispatcher::startSimulation(LocalSharedMemory &iLSM)
         // Synchronize the time step and update time variables:
         iLSM.setIterationIndex(i);
         
-        // Initialize time counters
+        // Initialize time counters and propagate in time
         if (i != 0)
         {
             mSimulationTime(i) = cSimTimeStep + mSimulationTime(i-1);
@@ -185,7 +189,11 @@ void SimDispatcher::startSimulation(LocalSharedMemory &iLSM)
         {
             wClockElapsed = (chrono::steady_clock::now() - wClockBegin);
         }
-        //cout<<"Waited for "<<std::chrono::duration_cast<std::chrono::milliseconds>(wClockElapsed).count()<<endl;
+        
+        if(DISPATCHER_DEBUG)
+        {
+        cout<<"Waited for "<<std::chrono::duration_cast<std::chrono::milliseconds>(wClockElapsed).count()<<endl;
+        }
         
     }
     cout<<endl;

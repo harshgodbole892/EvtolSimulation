@@ -20,6 +20,8 @@ using namespace std;
 #ifndef SIMCOMPONENT_H
 #define SIMCOMPONENT_H
 
+#define SIMCOMPONENT_DEBUG 0
+
 class LocalSharedMemory;
 // ------ //
 class SimComponent

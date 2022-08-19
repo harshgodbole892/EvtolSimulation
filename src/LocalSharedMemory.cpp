@@ -43,6 +43,12 @@ void LocalSharedMemory::initializeSimulationParameters()
     cSimulationDuration = 3 * HR2SEC;
     // Simulation time step (sec)
     cSimulationTimeStep = 60;  // 1 min time step
+    
+    // Note that smallest possible time step
+    // is 0.001s with RT dispatcher
+    // Time step is also limited depending on the type of C++
+    // distrubution used. Limit to 1 sec for effective random
+    // number generation.
 }
 
 /*

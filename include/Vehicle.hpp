@@ -29,7 +29,8 @@ class Vehicle : public SimComponent
 {
 public:
     
-    // setters:
+    // public setters:
+    void setVehicleState(int iState, LocalSharedMemory &iLSM);
     void setCruiseSpeed(double iInput)      { cCruiseSpeed(0)       = iInput;}
     void setBatteryCapacity(double iInput)  { cBatteryCapacity(0)   = iInput;}
     void setTimeToCharge(double iInput)     { cTimeToCharge(0)      = iInput;}
@@ -37,8 +38,6 @@ public:
     void setPassengerCount(int    iInput)   { cPassengerCount(0)    = static_cast<double>(iInput);}
     void setFaultProbPerHr(double iInput)   { cFaultProbPerHr(0)    = iInput;}
     void setVehicleInitMode(int iInput)     { oVehicleInitMode      = iInput;}
-    void setVehicleState(int iState, LocalSharedMemory &iLSM);
-
     
     // getters:
     double getCruiseSpeed()      { return cCruiseSpeed(0)      ;}
@@ -63,15 +62,7 @@ public:
     Vehicle(int iComponentId, string iName, LocalSharedMemory &LSM);
     
     // Member functions:
-    void initializeStateSize();
-    void initializeVehicle();
-    void loadParameters(string iName, LocalSharedMemory &iLSM);
     void update(LocalSharedMemory &LSM);
-    void computeCruiseState(LocalSharedMemory &LSM);
-    void computeDischargedState(LocalSharedMemory &iLSM);
-    void computeQueueState(LocalSharedMemory &LSM);
-    void computeChargingState(LocalSharedMemory &LSM);
-    void computeMaxFaultsPerHr(LocalSharedMemory &iLSM);
     void saveCollect(LocalSharedMemory &LSM);
     
 private:
@@ -119,6 +110,16 @@ private:
     // Build Options:
     int oVehicleInitMode{VehicleInitMode::CRUISE_FULLBAT};
                                    // Enum Vehicle Init Mode,
+    
+    // Internal member functions:
+    void initializeStateSize();
+    void initializeVehicle();
+    void loadParameters(string iName, LocalSharedMemory &iLSM);
+    void computeCruiseState(LocalSharedMemory &LSM);
+    void computeDischargedState(LocalSharedMemory &iLSM);
+    void computeQueueState(LocalSharedMemory &LSM);
+    void computeChargingState(LocalSharedMemory &LSM);
+    void computeMaxFaultsPerHr(LocalSharedMemory &iLSM);
     
 };
 

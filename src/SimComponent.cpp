@@ -28,8 +28,11 @@ SimComponent::SimComponent(int iComponentId, string iComponentName)
 */
 void SimComponent::update(LocalSharedMemory &iLSM)
 {
-    //cout<<"This is SimComponent Class, Timestep : "<<cTimeStep<<endl;
-    //cout<<"From local shared memory - Simulation duration is "<<iLSM.getSimulationDuration()<<endl;
+    if(SIMCOMPONENT_DEBUG)
+    {
+        cout<<"This is SimComponent Class"<<endl;
+        cout<<"From local shared memory - Simulation duration is "<<iLSM.getSimulationDuration()<<endl;
+    }
 }
 
 /*
