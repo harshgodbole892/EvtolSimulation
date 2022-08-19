@@ -17,6 +17,8 @@ CMake is used to configure the cross platform build. The build is only testes fo
 - Clone this repository and open a terminal at its root folder that includes the CMakeLists.txt file.
 - Open the CMakeLists.txt and modify the following line to ensure that armadillo libs and include directories are correctly set. 
 - Also set the project home directory to be at the clone location of this repository like the following example:
+
+
 ```
 set(ARMADILLO_INCLUDE_DIR /Users/username/Documents/Github/armadillo-code/include)
 set(ARMADILLO_LIBRARIES /Users/username/Documents/Github/armadillo-code)
@@ -30,6 +32,11 @@ cmake --build build
 ```
 
 - Once built successfully, to run the exe and unit tests. The correct environment variable needs to be present and the generated directory needs to be created or cleaned before execution. Use RunEvtolSimulaiton.sh and RunEvtolSimulationTests.sh to execute this operation. (For linux, this script may need to be modified slightly.)
+
+Note: If running on Linux, follow this link to change the line endings for all the files contained in the .parameters folder before proceeding
+http://ubuntuguide.net/convert-text-file-format-between-windowsmac-and-ubuntu-linux
+
+
 ```
 ./RunEvtolSimulation.sh
 ./RunEvtolSimulationTests.sh
